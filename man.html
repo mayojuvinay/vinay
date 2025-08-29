@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simple Text to Speech</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.1.1",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.1.1/",
+    "react/": "https://aistudiocdn.com/react@^19.1.1/"
+  }
+}
+</script>
+</head>
+<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen font-sans">
+
+    <div id="app" class="w-full max-w-lg bg-slate-800 rounded-xl shadow-lg p-8 space-y-6">
+        <h1 class="text-3xl font-bold text-center text-indigo-400">Simple Text to Speech</h1>
+        
+        <!-- Text area for input -->
+        <div>
+            <label for="text-input" class="block text-sm font-medium text-slate-300 mb-2">Enter text to speak:</label>
+            <textarea 
+                id="text-input" 
+                class="w-full h-32 p-4 bg-slate-700 border border-slate-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 resize-none text-slate-200"
+                placeholder="Type something here..."
+            >Hello! This is a simple text to speech example.</textarea>
+        </div>
+
+        <!-- Speak button -->
+        <button 
+            id="speak-button" 
+            class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-indigo-500/50 disabled:opacity-50"
+        >
+            Speak
+        </button>
+
+        <!-- Status message area -->
+        <p id="status" class="text-center text-sm text-slate-400 h-4"></p>
+    </div>
+
+    <script>
+        // Find the elements on the page
+        const textInput = document.getElementById('text-input');
+        const speakButton = document.getElementById('speak-button');
+        const statusEl = document.getElementById('status');
+
+        // Check if the browser supports the Web Speech API
+        if ('speechSynthesis' in window) {
+            statusEl.textContent = "Ready to speak.";
+        } else {
+            // If not supported, show an error and disable the button
+            statusEl.textContent = "Sorry, your browser does not support text-to-speech.";
+            speakButton.disabled = true;
+            textInput.disabled = true;
+        }
+
+        // Add an event listener to the button
+        speakButton.addEventListener('click', () => {
+            const text = textInput.value;
+
+            // Make sure there is text to speak
+            if (text.trim().length > 0) {
+                // Stop any previous speech
+                window.speechSynthesis.cancel();
+
+                // Create a new speech utterance
+                const utterance = new SpeechSynthesisUtterance(text);
+                
+                // Optional: Log errors
+                utterance.onerror = (event) => {
+                    console.error('SpeechSynthesisUtterance.onerror', event);
+                    statusEl.textContent = 'An error occurred during speech.';
+                };
+
+                // Speak the text
+                window.speechSynthesis.speak(utterance);
+            }
+        });
+    </script>
+
+</body>
+</html>
